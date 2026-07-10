@@ -44,7 +44,7 @@ const PopularRideOptions = () => {
     <section className="w-full bg-white py-16 px-6 font-sans">
       <div className="max-w-7xl mx-auto">
         
-        {/* Header Section */}
+
         <div className="text-center flex flex-col items-center mb-16">
           <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-[#fbc843] mb-3">
             Services
@@ -52,7 +52,7 @@ const PopularRideOptions = () => {
           <p className="text-3xl md:text-4xl font-black text-[#1a2333] mb-4 font-bold">
             Popular Ride Options
           </p>
-          {/* Small Accent Line */}
+
           <div className="w-12 h-1 bg-[#fbc843] rounded mb-6" />
           <p className="text-gray-400 max-w-2xl text-sm leading-relaxed font-medium">
             Purus porta feugiat egestas a diam sed ipsum, enim orci. In lectus bibendum 
@@ -60,7 +60,7 @@ const PopularRideOptions = () => {
           </p>
         </div>
 
-        {/* Responsive Grid Section */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {rideOptions.map((option) => {
             const IconComponent = option.icon

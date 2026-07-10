@@ -1,20 +1,22 @@
 import React from 'react'
 import BgImage from "../../../src/assets/Image/bgImage.png"
+import { useRouter } from "next/navigation";
 import { Calendar, Clock, ChevronDown, ShieldCheck, CreditCard, Car } from 'lucide-react'
 const Banner = () => {
+   const router = useRouter();
   return (
     <div>
         <div 
       className="min-h-[calc(100vh-80px)] w-full flex items-center bg-cover bg-center bg-no-repeat relative"
       style={{ backgroundImage: `url(${BgImage.src})` }} // Fix: Binds image directly to container layer
     >
-      {/* Soft gradient overlay to keep text readable */}
+
       <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-transparent to-transparent pointer-events-none" />
 
-      {/* Main Container Content */}
+
       <div className="max-w-7xl mx-auto px-6 py-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-10">
         
-        {/* Left Side: Hero Marketing Content */}
+
         <div className="lg:col-span-7 flex flex-col space-y-4">
           <span className="text-xs uppercase tracking-widest font-extrabold text-[#1a2333]">
             Cab Booking Made Easy
@@ -37,7 +39,7 @@ const Banner = () => {
             </button>
           </div>
 
-          {/* Core Feature Highlights */}
+
           <div className="pt-8 flex flex-wrap gap-6 items-center text-[#1a2333] font-bold text-sm">
             <div className="flex items-center gap-2">
               <Car className="w-5 h-5 text-[#fbc843]" />
@@ -54,12 +56,12 @@ const Banner = () => {
           </div>
         </div>
 
-        {/* Right Side: Tabbed Booking Card Form */}
+
         <div className="lg:col-span-5 w-full flex justify-end">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md border border-gray-100">
             <h2 className="text-xl font-extrabold text-gray-900 mb-4">Choose Your Journey</h2>
             
-            {/* Form Tabs */}
+
             <div className="flex border-b border-gray-100 text-xs font-bold text-gray-400 mb-5 pb-1 gap-4">
               <button className="text-[#fbc843] border-b-2 border-[#fbc843] pb-2 px-1">One Way</button>
               <button className="hover:text-gray-600 pb-2 px-1 transition-colors">Round Trip</button>
@@ -67,9 +69,9 @@ const Banner = () => {
               <button className="hover:text-gray-600 pb-2 px-1 transition-colors">Rental</button>
             </div>
 
-            {/* Booking Form Fields */}
+
             <div className="space-y-4">
-              {/* Pickup field */}
+
               <div>
                 <label className="block text-xs font-bold text-gray-800 mb-1.5">Pickup Location</label>
                 <div className="relative flex items-center">
@@ -82,7 +84,7 @@ const Banner = () => {
                 </div>
               </div>
 
-              {/* Drop field */}
+
               <div>
                 <label className="block text-xs font-bold text-gray-800 mb-1.5">Drop Location</label>
                 <div className="relative flex items-center">
@@ -95,7 +97,7 @@ const Banner = () => {
                 </div>
               </div>
 
-              {/* Date & Time fields split row */}
+
               <div>
                 <label className="block text-xs font-bold text-gray-800 mb-1.5">Date & Time</label>
                 <div className="grid grid-cols-2 gap-3">
@@ -118,7 +120,7 @@ const Banner = () => {
                 </div>
               </div>
 
-              {/* Vehicle Select dropdown */}
+
               <div>
                 <label className="block text-xs font-bold text-gray-800 mb-1.5">Vehicle Type</label>
                 <div className="relative flex items-center">
@@ -134,9 +136,9 @@ const Banner = () => {
                 </div>
               </div>
 
-              {/* Submit CTA button */}
+
               <div className="pt-2">
-                <button className="w-full bg-[#fbc843] hover:bg-[#e0b236] text-[#1a2333] font-bold py-3 rounded-lg text-sm transition-colors shadow-md">
+                <button     onClick={() => router.push("/trip")} className="w-full bg-[#fbc843] hover:bg-[#e0b236] text-[#1a2333] font-bold py-3 rounded-lg text-sm transition-colors shadow-md">
                   Find My cab
                 </button>
               </div>

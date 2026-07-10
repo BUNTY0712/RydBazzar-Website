@@ -39,17 +39,17 @@ const HomeCards = () => {
               key={card.id} 
               className="bg-white rounded-xl p-8 flex flex-col items-center text-center shadow-[0_10px_30px_rgba(0,0,0,0.08)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.08)] transition-all duration-300 border border-gray-50/50 group"
             >
-              {/* Circular Icon Wrapper */}
+
               <div className="w-16 h-16 rounded-full bg-[#fbfbff] flex items-center justify-center mb-6 shadow-inner transition-transform duration-300 group-hover:scale-105">
                 <IconComponent className="w-7 h-7 text-[#fbc843]" strokeWidth={2} />
               </div>
 
-              {/* Card Title */}
+
               <h3 className="text-[#1a2333] font-extrabold text-base mb-3 tracking-wide">
                 {card.title}
               </h3>
 
-              {/* Card Description */}
+
               <p className="text-gray-400 text-sm leading-relaxed font-medium max-w-[240px]">
                 {card.description}
               </p>

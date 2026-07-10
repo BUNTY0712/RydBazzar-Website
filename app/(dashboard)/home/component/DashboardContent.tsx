@@ -12,24 +12,24 @@ import Testimonials from './Testimonials'
 
 const DashboardContent = () => {
   
-  // Initialize AOS on the client side when component mounts
+
   useEffect(() => {
     AOS.init({
-      duration: 600,     // Animation duration in milliseconds
-      easing: 'ease-out', // Default easing function
-      once: true,        // True means animation only triggers once when scrolling down
-      offset: 100,       // Change trigger point (in px) from the original top offset
+      duration: 600,     
+      easing: 'ease-out', 
+      once: true,        
+      offset: 100,       
     })
   }, [])
 
   return (
     <>
-      {/* Banner shows immediately */}
+
       <div>
         <Banner />
       </div>
 
-      {/* AOS scroll-driven animated wrappers */}
+
       <div data-aos="fade-up">
         <HomeCards />
       </div>

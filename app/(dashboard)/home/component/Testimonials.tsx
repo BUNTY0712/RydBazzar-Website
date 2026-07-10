@@ -32,7 +32,7 @@ const Testimonials = () => {
     >
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         
-        {/* Left Column: Heading Content */}
+
         <div className="lg:col-span-4 flex flex-col space-y-5">
           <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-[#1a2333]/80">
             Testimonials
@@ -57,14 +57,14 @@ const Testimonials = () => {
           </div>
         </div>
 
-        {/* Right Column: Testimonial Cards Layout */}
+
         <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-16 pt-12 lg:pt-0">
           {feedbackData.map((item) => (
             <div 
               key={item.id} 
               className="bg-white rounded-xl px-6 pb-8 pt-16 flex flex-col items-center text-center shadow-[0_15px_40px_rgba(0,0,0,0.06)] relative"
             >
-              {/* Floating Avatar */}
+
               <div className="absolute -top-12 w-24 h-24 rounded-full bg-white p-1.5 shadow-lg">
                 <div className="relative w-full h-full rounded-full overflow-hidden bg-gray-200">
                   <Image 
@@ -76,19 +76,19 @@ const Testimonials = () => {
                 </div>
               </div>
 
-              {/* Five Star Rating Row */}
+
               <div className="flex items-center gap-1 mb-5">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-[#fbc843] text-[#fbc843]" />
                 ))}
               </div>
 
-              {/* Quote Content */}
+
               <p className="text-gray-400 text-sm leading-relaxed font-medium mb-6 px-2 flex-1">
                 {item.quote}
               </p>
 
-              {/* Author Details */}
+
               <div className="mt-auto">
                 <h4 className="text-[#1a2333] font-black text-base tracking-wide capitalize">
                   {item.name}
