@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Calendar,
-  Clock,
   Loader2,
   ShieldCheck,
   Plus,
@@ -150,6 +148,44 @@ const RentalForm = () => {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Pre-fill form state when modifying an existing rental booking
+  useEffect(() => {
+    const storedData = sessionStorage.getItem("modifyTripData");
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        if (parsed.tripType === "RENTAL") {
+          let rawTime = parsed.pickupTime || "";
+          if (parsed.pickupTime && parsed.amOrPm) {
+            const [h, m] = parsed.pickupTime.split(":");
+            let hours = parseInt(h, 10);
+            if (parsed.amOrPm === "PM" && hours < 12) hours += 12;
+            if (parsed.amOrPm === "AM" && hours === 12) hours = 0;
+            rawTime = `${hours.toString().padStart(2, "0")}:${m}`;
+          }
+
+          if (parsed.durationHours) {
+            setSelectedHour(parsed.durationHours);
+          }
+
+          setForm({
+            pickup: {
+              location: parsed.fromLocation || "",
+              latitude: parsed.fromLatitude || null,
+              longitude: parsed.fromLongitude || null,
+              state: parsed.fromState || "",
+            },
+            intermediateStops: parsed.intermediateStops || [],
+            date: parsed.pickupDate || "",
+            time: rawTime,
+          });
+        }
+      } catch (e) {
+        console.error("Error restoring rental trip data:", e);
+      }
+    }
+  }, []);
+
   // Pickup Handlers
   const handleInputChange = (value: string) => {
     setForm((prev) => ({
@@ -248,7 +284,6 @@ const RentalForm = () => {
       console.error("Failed parsing user credentials:", e);
     }
 
-    // Format intermediateStops to match backend schema
     const formattedStops = form.intermediateStops
       .filter((stop) => stop.location.trim() !== "")
       .map((stop, index) => ({
@@ -282,6 +317,7 @@ const RentalForm = () => {
       if (resData) {
         sessionStorage.setItem("currentRentalQuote", JSON.stringify(resData));
         sessionStorage.setItem("rentalBookingPayload", JSON.stringify(payload));
+        sessionStorage.removeItem("modifyTripData"); // Clear modification state upon successful submission
         router.push("/rental-trip");
       }
     } catch (error: any) {

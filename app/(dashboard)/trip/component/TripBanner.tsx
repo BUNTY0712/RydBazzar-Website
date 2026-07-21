@@ -30,6 +30,13 @@ interface TripBannerProps {
 
 const TripBanner = ({ data }: TripBannerProps) => {
   const router = useRouter();
+  const handleModifyBooking = () => {
+  if (data) {
+    // Save state to pre-fill the form upon redirecting back
+    sessionStorage.setItem("modifyTripData", JSON.stringify(data));
+  }
+  router.back(); // or router.push("/") depending on your routing setup
+};
 
   // Format Trip type clean naming format
   const formattedTripType = data?.tripType === "ONE_WAY" ? "One Way" : data?.tripType || "One Way";
@@ -108,13 +115,13 @@ const TripBanner = ({ data }: TripBannerProps) => {
             </div>
           </div>
 
-          <button 
-            onClick={() => router.back()} 
-            className="flex items-center gap-2 border border-slate-600 bg-slate-800/40 hover:bg-slate-800/80 px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200"
-          >
-            Modify Booking
-            <Pencil className="w-3.5 h-3.5 stroke-[2.5]" />
-          </button>
+       <button 
+  onClick={handleModifyBooking} 
+  className="flex items-center gap-2 border border-slate-600 bg-slate-800/40 hover:bg-slate-800/80 px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-200"
+>
+  Modify Booking
+  <Pencil className="w-3.5 h-3.5 stroke-[2.5]" />
+</button>
         </div>
       </div>
 

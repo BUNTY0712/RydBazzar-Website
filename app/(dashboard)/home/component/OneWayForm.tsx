@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Calendar, ChevronDown, Clock, Loader2, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, Loader2, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { 
   useLazyGetLocationSuggestionsQuery, 
@@ -152,6 +152,48 @@ const OneWayForm = () => {
     vehicle: "",
   });
 
+  // Pre-fill form state when user comes back via "Modify Booking"
+  useEffect(() => {
+    const storedData = sessionStorage.getItem("modifyTripData");
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+
+        if (parsed.tripType === "ONE_WAY" || !parsed.tripType) {
+          let rawTime = parsed.pickupTime || "";
+          if (parsed.pickupTime && parsed.amOrPm) {
+            const [h, m] = parsed.pickupTime.split(":");
+            let hours = parseInt(h, 10);
+            if (parsed.amOrPm === "PM" && hours < 12) hours += 12;
+            if (parsed.amOrPm === "AM" && hours === 12) hours = 0;
+            rawTime = `${hours.toString().padStart(2, "0")}:${m}`;
+          }
+
+          setForm({
+            pickup: {
+              location: parsed.fromLocation || "",
+              latitude: parsed.fromLatitude || null,
+              longitude: parsed.fromLongitude || null,
+              state: parsed.fromState || "",
+            },
+            drop: {
+              location: parsed.toLocation || "",
+              latitude: parsed.toLatitude || null,
+              longitude: parsed.toLongitude || null,
+              state: parsed.toState || "",
+            },
+            intermediateStops: parsed.intermediateStops || [],
+            date: parsed.pickupDate || "",
+            time: rawTime,
+            vehicle: parsed.vehicleType || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error restoring modify trip payload:", error);
+      }
+    }
+  }, []);
+
   // Pickup & Drop Location Handlers
   const handleInputChange = (key: "pickup" | "drop", value: string) => {
     setForm((prev) => ({
@@ -241,7 +283,6 @@ const OneWayForm = () => {
       console.error("Failed parsing cached user credentials:", e);
     }
 
-    // Format stops to match the backend API schema with order, location, lat, long & state
     const formattedStops = form.intermediateStops
       .filter((stop) => stop.location.trim() !== "")
       .map((stop, index) => ({
@@ -274,6 +315,7 @@ const OneWayForm = () => {
     try {
       const resData = await getBestPrice(payload).unwrap();
       sessionStorage.setItem("currentTripQuote", JSON.stringify(resData));
+      sessionStorage.removeItem("modifyTripData"); // Clear prefill cache upon new search
       router.push("/trip");
     } catch (error) {
       console.error("Fare Quote Calculation failed:", error);

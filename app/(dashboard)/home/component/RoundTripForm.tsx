@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Calendar, ChevronDown, Clock, Loader2, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, Loader2, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { 
   useLazyGetLocationSuggestionsQuery, 
@@ -160,6 +160,49 @@ const RoundTripForm = () => {
     vehicle: "",
   });
 
+  // Hydrate form when coming back via "Modify Booking"
+  useEffect(() => {
+    const storedData = sessionStorage.getItem("modifyTripData");
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        if (parsed.tripType === "ROUND_TRIP") {
+          const format24h = (timeStr?: string, period?: string) => {
+            if (!timeStr) return "";
+            const [h, m] = timeStr.split(":");
+            let hours = parseInt(h, 10);
+            if (period === "PM" && hours < 12) hours += 12;
+            if (period === "AM" && hours === 12) hours = 0;
+            return `${hours.toString().padStart(2, "0")}:${m}`;
+          };
+
+          setForm({
+            pickup: {
+              location: parsed.fromLocation || "",
+              latitude: parsed.fromLatitude || null,
+              longitude: parsed.fromLongitude || null,
+              state: parsed.fromState || "",
+            },
+            drop: {
+              location: parsed.toLocation || "",
+              latitude: parsed.toLatitude || null,
+              longitude: parsed.toLongitude || null,
+              state: parsed.toState || "",
+            },
+            intermediateStops: parsed.intermediateStops || [],
+            pickupDate: parsed.pickupDate || "",
+            pickupTime: format24h(parsed.pickupTime, parsed.amOrPm),
+            returnDate: parsed.returnDate || "",
+            returnTime: format24h(parsed.returnTime, parsed.returnAmOrPm),
+            vehicle: parsed.vehicleType || "",
+          });
+        }
+      } catch (e) {
+        console.error("Error restoring round trip data:", e);
+      }
+    }
+  }, []);
+
   // Pickup & Drop Location Handlers
   const handleInputChange = (key: "pickup" | "drop", value: string) => {
     setForm((prev) => ({
@@ -286,11 +329,10 @@ const RoundTripForm = () => {
       tripType: "ROUND_TRIP" as const 
     };
 
-    console.log("Submitting API Payload:", payload);
-
     try {
       const resData = await getBestPrice(payload).unwrap();
       sessionStorage.setItem("currentTripQuote", JSON.stringify(resData));
+      sessionStorage.removeItem("modifyTripData"); // Clear cached modify payload
       router.push("/trip");
     } catch (error) {
       console.error("Fare Quote Calculation failed:", error);

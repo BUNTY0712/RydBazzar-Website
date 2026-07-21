@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Calendar, ChevronDown, Clock, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { 
   useGetCorridorPickupSuggestionsMutation, 
@@ -132,6 +132,54 @@ const AirportForm = () => {
     vehicle: "",
   });
 
+  // Pre-fill form state when modifying an existing airport trip
+  useEffect(() => {
+    const storedData = sessionStorage.getItem("modifyTripData");
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        if (parsed.tripType === "AIRPORT") {
+          let rawTime = parsed.pickupTime || "";
+          if (parsed.pickupTime && parsed.amOrPm) {
+            const [h, m] = parsed.pickupTime.split(":");
+            let hours = parseInt(h, 10);
+            if (parsed.amOrPm === "PM" && hours < 12) hours += 12;
+            if (parsed.amOrPm === "AM" && hours === 12) hours = 0;
+            rawTime = `${hours.toString().padStart(2, "0")}:${m}`;
+          }
+
+          const pickupObj = {
+            address: parsed.fromLocation || "",
+            latitude: parsed.fromLatitude || null,
+            longitude: parsed.fromLongitude || null,
+            placeId: parsed.fromPlaceId || "",
+            id: parsed.fromAirportMasterId || "",
+          };
+
+          setSelectedPickup(pickupObj);
+
+          setForm({
+            pickup: {
+              address: parsed.fromLocation || "",
+              latitude: parsed.fromLatitude || null,
+              longitude: parsed.fromLongitude || null,
+            },
+            drop: {
+              address: parsed.toLocation || "",
+              latitude: parsed.toLatitude || null,
+              longitude: parsed.toLongitude || null,
+            },
+            date: parsed.pickupDate || "",
+            time: rawTime,
+            vehicle: parsed.vehicleType || "",
+          });
+        }
+      } catch (e) {
+        console.error("Error restoring airport trip data:", e);
+      }
+    }
+  }, []);
+
   const handleInputChange = (key: "pickup" | "drop", value: string) => {
     setForm((prev) => ({
       ...prev,
@@ -206,11 +254,10 @@ const AirportForm = () => {
       tripType: "AIRPORT" as any 
     };
 
-    console.log("Submitting Airport API Payload:", payload);
-
     try {
       const resData = await getBestPrice(payload).unwrap();
       sessionStorage.setItem("currentTripQuote", JSON.stringify(resData));
+      sessionStorage.removeItem("modifyTripData"); // Clear prefill cache upon submission
       router.push("/trip");
     } catch (error) {
       console.error("Fare Quote Calculation failed:", error);
@@ -276,7 +323,6 @@ const AirportForm = () => {
               onChange={(e) => handleFieldChange("date", e.target.value)}
               className="w-full border border-gray-200 rounded-lg py-3 px-3.5 text-sm text-gray-700 outline-none focus:border-gray-400 transition-colors bg-white"
             />
-            {/* <Calendar size={18} className="absolute right-3.5 text-gray-400 pointer-events-none" /> */}
           </div>
 
           <div className="relative flex items-center">
@@ -286,7 +332,6 @@ const AirportForm = () => {
               onChange={(e) => handleFieldChange("time", e.target.value)}
               className="w-full border border-gray-200 rounded-lg py-3 px-3.5 text-sm text-gray-700 outline-none focus:border-gray-400 transition-colors bg-white"
             />
-            {/* <Clock size={18} className="absolute right-3.5 text-gray-400 pointer-events-none" /> */}
           </div>
         </div>
       </div>
