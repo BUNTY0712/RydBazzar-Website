@@ -1,10 +1,31 @@
+"use client";
+
 import React from 'react';
-import { Sun, RotateCcw, PhoneCall, Pencil, ArrowRight } from 'lucide-react';
+import { Sun, RotateCcw, PhoneCall, Pencil, ArrowRight, MapPin } from 'lucide-react';
 import TripBannerBg from "../../../src/assets/Image/TripBanner.png";
 import { useRouter } from "next/navigation";
 
+interface IntermediateStop {
+  order: number;
+  location: string;
+  latitude: number;
+  longitude: number;
+  state: string;
+}
+
 interface TripBannerProps {
-  data: any;
+  data: {
+    fromLocation?: string;
+    toLocation?: string;
+    distanceKm?: number;
+    durationMinutes?: number;
+    tripType?: string;
+    pickupDate?: string;
+    pickupTime?: string;
+    amOrPm?: string;
+    intermediateStops?: IntermediateStop[];
+    [key: string]: any;
+  };
 }
 
 const TripBanner = ({ data }: TripBannerProps) => {
@@ -12,6 +33,7 @@ const TripBanner = ({ data }: TripBannerProps) => {
 
   // Format Trip type clean naming format
   const formattedTripType = data?.tripType === "ONE_WAY" ? "One Way" : data?.tripType || "One Way";
+  const intermediateStops = data?.intermediateStops || [];
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 font-sans selection:bg-yellow-400">
@@ -23,15 +45,34 @@ const TripBanner = ({ data }: TripBannerProps) => {
           <span className="text-[10px] uppercase tracking-[0.15em] text-yellow-500 font-bold">
             Your Trip Summary
           </span>
+
+          {/* Route Header with Pickup, Intermediate Stops & Drop */}
           <h2 className="text-xl md:text-2xl font-bold mt-1 tracking-tight flex flex-wrap items-center gap-2">
-            <span className="truncate max-w-[280px] md:max-w-md" title={data?.fromLocation}>
+            {/* Pickup Location */}
+            <span className="truncate max-w-[200px] md:max-w-xs" title={data?.fromLocation}>
               {data?.fromLocation?.split(',')[0]}
             </span> 
+
+            {/* Intermediate Stops Sequence */}
+            {intermediateStops.map((stop) => (
+              <React.Fragment key={stop.order || stop.location}>
+                <ArrowRight className="w-5 h-5 text-yellow-500 shrink-0 stroke-[2.5]" />
+                <span 
+                  className="truncate max-w-[180px] md:max-w-xs text-yellow-300 bg-yellow-950/40 px-2.5 py-0.5 rounded-md border border-yellow-500/30 text-lg font-semibold"
+                  title={stop.location}
+                >
+                  {stop.location?.split(',')[0]}
+                </span>
+              </React.Fragment>
+            ))}
+
+            {/* Drop Location */}
             <ArrowRight className="w-5 h-5 text-slate-300 shrink-0 stroke-[2.5]" /> 
-            <span className="truncate max-w-[280px] md:max-w-md" title={data?.toLocation}>
+            <span className="truncate max-w-[200px] md:max-w-xs" title={data?.toLocation}>
               {data?.toLocation?.split(',')[0]}
             </span>
           </h2>
+
           <p className="text-xs text-slate-400 mt-1 font-medium max-w-xl hidden md:block">
             {data?.distanceKm} km • Approx. {data?.durationMinutes} mins away
           </p>
@@ -39,12 +80,24 @@ const TripBanner = ({ data }: TripBannerProps) => {
 
         <div className="w-full h-[1px] bg-slate-700/50 my-6 max-w-xl"></div>
 
-        <div className="flex flex-wrap items-center gap-10 max-w-3xl">
-          <div className="flex gap-8 md:gap-12">
+        <div className="flex flex-wrap items-center justify-between gap-6 max-w-3xl">
+          <div className="flex flex-wrap gap-6 md:gap-10">
             <div>
               <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Trip Type</p>
               <p className="text-base font-bold mt-1">{formattedTripType}</p>
             </div>
+
+            {/* Intermediate Stops Badge Count */}
+            {intermediateStops.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Via Stops</p>
+                <p className="text-base font-bold mt-1 text-yellow-400 flex items-center gap-1">
+                  <MapPin size={16} />
+                  {intermediateStops.length} {intermediateStops.length === 1 ? 'Stop' : 'Stops'}
+                </p>
+              </div>
+            )}
+
             <div>
               <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Pickup Date</p>
               <p className="text-base font-bold mt-1">{data?.pickupDate}</p>
