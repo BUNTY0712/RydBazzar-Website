@@ -1,12 +1,20 @@
-import { redirect } from "next/navigation"
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
- 
-  const isLoggedIn = false // 🔥 replace with real auth later
+  const router = useRouter();
 
-  if (true) {
-    redirect("/dashboard")
-  } else {
-    redirect("/login")
-  }
+  useEffect(() => {
+    const token = localStorage.getItem("RydBazzarToken");
+
+    if (token) {
+      router.replace("/dashboard");
+    } else {
+      router.replace("/login");
+    }
+  }, [router]);
+
+  return null; // or a loading spinner
 }
